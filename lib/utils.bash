@@ -30,7 +30,6 @@ release_file_name() {
   echo "${TOOL_NAME}_${version}_$(get_arch)_$(get_bit_arch)${ext}"
 }
 
-
 get_download_url() {
   local version="${1}"
   local downloaded_filename="${2}"
@@ -38,13 +37,13 @@ get_download_url() {
   echo "$GH_REPO/releases/download/v${version}/$(release_file_name $version $ext)"
 }
 
-add_to_install(){
+add_to_install() {
   local release_file_no_extension="${1}"
   local install_path="${2:-}"
   local extract=${3:-}
   local release_file="${release_file_no_extension}.gz"
 
-  if [ "${extract}" = "true" ] ; then
+  if [ "${extract}" = "true" ]; then
     gunzip "$release_file" || fail "Could not extract $release_file"
   fi
 
@@ -112,7 +111,7 @@ install_version() {
   local extract=false
   (
     mkdir -p "$install_path"
-    if ! download_release "$version" "$release_file" ; then
+    if ! download_release "$version" "$release_file"; then
       extract=true
       download_release "$version" "$release_file" ".gz"
       release_file="${release_file_no_ext}.gz"
