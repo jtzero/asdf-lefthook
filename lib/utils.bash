@@ -12,7 +12,12 @@ if [ -n "${DEBUG:-}" ]; then
 fi
 
 get_arch() {
-  uname
+  local uname_arch="$(uname)"
+  if [ "${uname_arch}" = "Darwin" ]; then
+    echo "MacOS"
+  else
+    echo "${uname_arch}"
+  fi
 }
 
 get_bit_arch() {
@@ -21,25 +26,27 @@ get_bit_arch() {
 
 release_file_name() {
   local version="${1}"
-  echo "${TOOL_NAME}_${version}_$(get_arch)_$(get_bit_arch).gz"
+  local ext="${2:-}"
+  echo "${TOOL_NAME}_${version}_$(get_arch)_$(get_bit_arch)${ext}"
 }
 
 
 get_download_url() {
   local version="${1}"
   local downloaded_filename="${2}"
-  # https://github.com/Arkweid/lefthook/releases/download/v0.7.2/lefthook_0.7.2_Linux_i386.gz
-  echo "$GH_REPO/releases/download/v${version}/$(release_file_name $version)"
+  local ext="${3:-}"
+  echo "$GH_REPO/releases/download/v${version}/$(release_file_name $version $ext)"
 }
 
-extract(){
+add_to_install(){
   local release_file_no_extension="${1}"
-  local install_path="${2}"
+  local install_path="${2:-}"
+  local extract=${3:-}
   local release_file="${release_file_no_extension}.gz"
 
-  gunzip "$release_file" || fail "Could not extract $release_file"
-  #tar -xzf "$release_file" -C "$install_path" --strip-components=1 || fail "Could not extract $release_file"
-  #rm "$release_file"
+  if [ "${extract}" = "true" ] ; then
+    gunzip "$release_file" || fail "Could not extract $release_file"
+  fi
 
   mkdir -p "${install_path}/bin"
   mv "${release_file_no_extension}" "${install_path}/bin/lefthook"
@@ -81,12 +88,13 @@ download_release() {
   local version filename url
   version="$1"
   filename="$2"
+  ext="${3:-}"
 
   # TODO: Adapt the release URL convention for <YOUR TOOL>
-  url="$(get_download_url $version $filename)"
+  url="$(get_download_url $version $filename $ext)"
 
-  echo "* Downloading $TOOL_NAME release $version..."
-  curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+  echo "* Downloading $TOOL_NAME release $version... from ${url}"
+  curl "${curl_opts[@]}" -o "$filename" -C - "$url"
 }
 
 install_version() {
@@ -100,11 +108,16 @@ install_version() {
 
   # TODO: Adapt this to proper extension and adapt extracting strategy.
   local release_file_no_ext="$install_path/$TOOL_NAME-$version"
-  local release_file="${release_file_no_ext}.gz"
+  local release_file="${release_file_no_ext}"
+  local extract=false
   (
     mkdir -p "$install_path"
-    download_release "$version" "$release_file"
-    extract "${release_file_no_ext}" "${install_path}"
+    if ! download_release "$version" "$release_file" ; then
+      extract=true
+      download_release "$version" "$release_file" ".gz"
+      release_file="${release_file_no_ext}.gz"
+    fi
+    add_to_install "${release_file_no_ext}" "${install_path}" $extract
 
     # TODO: Asert <YOUR TOOL> executable exists.
     local tool_cmd
