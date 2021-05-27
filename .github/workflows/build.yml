@@ -19,3 +19,8 @@ jobs:
         uses: asdf-vm/actions/plugin-test@v1
         with:
           command: lefthook run --help
+      - name: old version test
+        uses: asdf-vm/actions/plugin-test@v1
+        with:
+          version: 0.7.2
+          command: lefthook run --help

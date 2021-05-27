@@ -93,7 +93,7 @@ download_release() {
   url="$(get_download_url $version $filename $ext)"
 
   echo "* Downloading $TOOL_NAME release $version... from ${url}"
-  curl "${curl_opts[@]}" -o "$filename" -C - "$url"
+  curl "${curl_opts[@]}" -o "$filename${ext}" -C - "$url"
 }
 
 install_version() {
