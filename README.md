@@ -1,7 +1,7 @@
 # asdf-lefthook
 
 
-Lefthook plugin for [asdf](https://github.com/asdf-vm/asdf) version manager
+[Lefthook](https://github.com/evilmartians/lefthook) plugin for [asdf](https://github.com/asdf-vm/asdf) version manager
 
 ## Install
 
