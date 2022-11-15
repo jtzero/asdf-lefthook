@@ -27,7 +27,29 @@ get_bit_arch() {
 release_file_name() {
   local version="${1}"
   local ext="${2:-}"
+  local bit_arch="$(get_bit_arch)"
+  local arch="$(get_arch)"
+  if [ "${arch}" = "MacOS" ] && [ "${bit_arch}" = "arm64" ] ; then
+    local first="$(echo "${version}" | cut -d'.' -f1)"
+    local second="$(echo "${version}" | cut -d'.' -f2)"
+    local third="$(echo "${version}" | cut -d'.' -f3)"
+    if [ "${first}" = "0" ] ; then
+      if (( ${second} < 7 )) ; then
+        fail_unsupported_version "${version}" "${arch}" "${bit_arch}"
+      fi
+      if [ "${second}" = "7" ] && (( ${third} <= 3 )) ; then
+        fail_unsupported_version "${version}" "${arch}" "${bit_arch}"
+      fi
+    fi
+  fi
   echo "${TOOL_NAME}_${version}_$(get_arch)_$(get_bit_arch)${ext}"
+}
+
+fail_unsupported_version() {
+  local version="${1}"
+  local arch="${2}"
+  local bit_arch="${3}"
+  fail "'${version}' is not supported no this architecture '${arch}-${bit_arch}'"
 }
 
 get_download_url() {
