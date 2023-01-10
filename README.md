@@ -19,8 +19,6 @@
 Plugin:
 
 ```shell
-asdf plugin add lefthook
-# or
 asdf plugin add lefthook https://github.com/jtzero/asdf-lefthook.git
 ```
 
