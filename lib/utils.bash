@@ -29,15 +29,15 @@ release_file_name() {
   local ext="${2:-}"
   local bit_arch="$(get_bit_arch)"
   local arch="$(get_arch)"
-  if [ "${arch}" = "MacOS" ] && [ "${bit_arch}" = "arm64" ] ; then
+  if [ "${arch}" = "MacOS" ] && [ "${bit_arch}" = "arm64" ]; then
     local first="$(echo "${version}" | cut -d'.' -f1)"
     local second="$(echo "${version}" | cut -d'.' -f2)"
     local third="$(echo "${version}" | cut -d'.' -f3)"
-    if [ "${first}" = "0" ] ; then
-      if (( ${second} < 7 )) ; then
+    if [ "${first}" = "0" ]; then
+      if ((${second} < 7)); then
         fail_unsupported_version "${version}" "${arch}" "${bit_arch}"
       fi
-      if [ "${second}" = "7" ] && (( ${third} <= 3 )) ; then
+      if [ "${second}" = "7" ] && ((${third} <= 3)); then
         fail_unsupported_version "${version}" "${arch}" "${bit_arch}"
       fi
     fi

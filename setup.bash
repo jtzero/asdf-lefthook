@@ -193,11 +193,11 @@ EOF
 }
 
 case "${1:-}" in
-  "-h" | "--help" | "help")
-    echo "$HELP"
-    exit 0
-    ;;
-  *)
-    setup "$@"
-    ;;
+"-h" | "--help" | "help")
+  echo "$HELP"
+  exit 0
+  ;;
+*)
+  setup "$@"
+  ;;
 esac
