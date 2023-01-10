@@ -37,7 +37,7 @@ asdf install lefthook latest
 asdf global lefthook latest
 
 # Now lefthook commands are available
-lefthook --version
+lefthook --v
 ```
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
