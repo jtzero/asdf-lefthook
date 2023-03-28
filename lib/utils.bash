@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for <YOUR TOOL>.
-GH_REPO="https://github.com/Arkweid/lefthook"
+GH_REPO="https://github.com/evilmartians/lefthook"
 TOOL_NAME="lefthook"
 TOOL_TEST="lefthook --version"
 
