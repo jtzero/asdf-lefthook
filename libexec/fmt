@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+if [ -z "${BASH_SOURCE[0]:-}" ]; then
+  # zsh
+  LIBEXEC_DIR="${0:A:h}"
+else
+  LIBEXEC_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+fi
+
+old_pwd="${PWD}"
+
+LIBEXEC_ROOT="$(dirname "${LIBEXEC_BIN_DIR}")"
+
+cd "${LIBEXEC_ROOT}" || exit 1
+for file in $(shfmt -f .); do
+  shfmt -w "${file}"
+done
+cd "${old_pwd}" || exit 1

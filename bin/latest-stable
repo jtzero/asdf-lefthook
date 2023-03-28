@@ -8,11 +8,11 @@ source "$(dirname "$0")/../lib/utils.bash"
 curl_opts=(-sI)
 
 if [ -n "${GITHUB_API_TOKEN:-}" ]; then
-	curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
+  curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
 fi
 
 # use GitHub releases latest API and follow redirect to resolve final version
 curl "${curl_opts[@]}" "$GH_REPO/releases/latest" |
-	sed -n -e "s|^location: $GH_REPO/releases/tag/||p" |
-	sed -n -e "s|\r||p" |
-	sed 's|^v||'
+  sed -n -e "s|^location: $GH_REPO/releases/tag/||p" |
+  sed -n -e "s|\r||p" |
+  sed 's|^v||'
