@@ -11,6 +11,8 @@ GH_REPO="https://github.com/evilmartians/lefthook"
 TOOL_NAME="lefthook"
 TOOL_TEST="lefthook --version"
 
+TAR_GZ_FILE_EXT=".tar.gz"
+
 fail() {
   echo -e "asdf-$TOOL_NAME: $*"
   exit 1
@@ -40,17 +42,92 @@ list_all_versions() {
   list_github_tags
 }
 
-download_release() {
-  local version filename url
+get_ext() {
+  local version url ext
   version="$1"
-  filename="$2"
-  ext="${3:-}"
+
+  ext=""
+  url="$(get_download_url "$version" "$ext")"
+  if curl -s --fail -I "${url}" >/dev/null; then
+    printf '%s' "${ext}"
+  else
+    ext=".gz"
+    url="$(get_download_url "$version" "$ext")"
+    if curl -s --fail -I "${url}" >/dev/null; then
+      printf '%s' "${ext}"
+    else
+      ext="${TAR_GZ_FILE_EXT}"
+      url="$(get_download_url "$version" "$ext")"
+      if curl -s --fail -I "${url}" >/dev/null; then
+        printf '%s' "${ext}"
+      else
+        fail "Cannot determine ext to download"
+      fi
+    fi
+  fi
+}
+
+download_release() {
+  local version filepath url
+  version="$1"
+  filepath="$2"
+  ext="${3}"
 
   # TODO: Adapt the release URL convention for lefthook
-  url="$(get_download_url $version $filename $ext)"
+  url="$(get_download_url "$version" "$ext")"
 
   echo "* Downloading $TOOL_NAME release $version... from ${url}"
-  curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+  curl "${curl_opts[@]}" -o "$filepath" -C - "$url" || fail "Could not download $url"
+}
+
+extract_as_needed() {
+  local version release_file download_path
+  version="${1}"
+  release_file="${2}"
+  download_path="${3}"
+
+  case "${ext}" in
+  "${TAR_GZ_FILE_EXT}")
+    handle_downloaded_release_tar "${release_file}" "${download_path}"
+    ;;
+  "gz")
+    handle_downloaded_release_not_tar "${release_file}" "${download_path}" true
+    ;;
+  "")
+    handle_downloaded_release_not_tar "${release_file}" "${download_path}" false
+    ;;
+  esac
+}
+
+handle_downloaded_release_tar() {
+  local release_file, download_path
+  release_file="${1}"
+  download_path="${2}"
+
+  tar -xzf "$release_file" -C "$download_path" --strip-components=1 || fail "Could not extract $release_file"
+}
+
+handle_downloaded_release_not_tar() {
+  local release_file="${1}"
+  local install_path="${2}"
+  local extract=${3:-false}
+
+  if [ "${extract}" = "true" ]; then
+    gunzip "$release_file" || fail "Could not extract $release_file"
+  fi
+
+  mkdir -p "${install_path}"
+  mv "${release_file}" "${install_path}/lefthook"
+  chmod +x "${install_path}/lefthook"
+}
+
+rm_release_file_as_needed() {
+  local release_file ext
+  release_file="${1}"
+  ext="${2}"
+  if [ "${ext}" = "${TAR_GZ_FILE_EXT}" ]; then
+    rm "${release_file}"
+  fi
 }
 
 install_version() {
@@ -62,20 +139,11 @@ install_version() {
     fail "asdf-$TOOL_NAME supports release installs only"
   fi
 
-  # TODO: Adapt this to proper extension and adapt extracting strategy.
-  local release_file_no_ext="$install_path/$TOOL_NAME-$version"
-  local release_file="${release_file_no_ext}"
-  local extract=false
   (
     mkdir -p "$install_path"
-    if ! download_release "$version" "$release_file"; then
-      extract=true
-      download_release "$version" "$release_file" ".gz"
-      release_file="${release_file_no_ext}.gz"
-    fi
-    add_to_install "${release_file_no_ext}" "${install_path}" $extract
+    cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
 
-    # TODO: Asert lefthook executable exists.
+    # TODO: Assert <YOUR TOOL> executable exists.
     local tool_cmd
     tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
     test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
@@ -130,22 +198,6 @@ fail_unsupported_version() {
 
 get_download_url() {
   local version="${1}"
-  local downloaded_filename="${2}"
-  local ext="${3:-}"
+  local ext="${2:-}"
   echo "$GH_REPO/releases/download/v${version}/$(release_file_name $version $ext)"
-}
-
-add_to_install() {
-  local release_file_no_extension="${1}"
-  local install_path="${2:-}"
-  local extract=${3:-}
-  local release_file="${release_file_no_extension}.gz"
-
-  if [ "${extract}" = "true" ]; then
-    gunzip "$release_file" || fail "Could not extract $release_file"
-  fi
-
-  mkdir -p "${install_path}/bin"
-  mv "${release_file_no_extension}" "${install_path}/bin/lefthook"
-  chmod +x "${install_path}/bin/lefthook"
 }
