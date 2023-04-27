@@ -14,6 +14,10 @@
 - [Contributing](#contributing)
 - [License](#license)
 
+# Dependencies
+
+- `bash`, `curl`, `tar`: generic POSIX utilities.
+
 # Install
 
 Plugin:
