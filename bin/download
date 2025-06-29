@@ -5,12 +5,11 @@ set -euo pipefail
 current_script_path=${BASH_SOURCE[0]}
 plugin_dir=$(dirname "$(dirname "$current_script_path")")
 
-# shellcheck source=../lib/utils.bash
+# shellcheck source=./lib/utils.bash
 source "${plugin_dir}/lib/utils.bash"
 
 mkdir -p "$ASDF_DOWNLOAD_PATH"
 
-# TODO: Adapt this to proper extension and adapt extracting strategy.
 release_file_base="$ASDF_DOWNLOAD_PATH/$TOOL_NAME-$ASDF_INSTALL_VERSION"
 
 ext="$(get_ext "$ASDF_INSTALL_VERSION")"

@@ -2,7 +2,6 @@
 
 # asdf-lefthook [![Build](https://github.com/jtzero/asdf-lefthook/actions/workflows/build.yml/badge.svg)](https://github.com/jtzero/asdf-lefthook/actions/workflows/build.yml) [![Lint](https://github.com/jtzero/asdf-lefthook/actions/workflows/lint.yml/badge.svg)](https://github.com/jtzero/asdf-lefthook/actions/workflows/lint.yml)
 
-
 [lefthook](https://github.com/evilmartians/lefthook.git) plugin for the [asdf version manager](https://asdf-vm.com).
 
 </div>
@@ -16,13 +15,16 @@
 
 # Dependencies
 
-- `bash`, `curl`, `tar`: generic POSIX utilities.
+
+- `bash`, `curl`, `tar`, and [POSIX utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html).
 
 # Install
 
 Plugin:
 
 ```shell
+asdf plugin add lefthook
+# or
 asdf plugin add lefthook https://github.com/jtzero/asdf-lefthook.git
 ```
 
@@ -39,7 +41,7 @@ asdf install lefthook latest
 asdf global lefthook latest
 
 # Now lefthook commands are available
-lefthook --v
+lefthook --help
 ```
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
@@ -53,4 +55,4 @@ Contributions of any kind welcome! See the [contributing guide](contributing.md)
 
 # License
 
-See [LICENSE](LICENSE) © [jtzero ?](https://github.com/jtzero/)
+See [LICENSE](LICENSE) © [jtzero <jtzero511@gmail.com>](https://github.com/jtzero/)
