@@ -6,3 +6,5 @@ updates:
       interval: "weekly"
     assignees:
       - "jtzero"
+    commit-message:
+      prefix: "chore(deps)"
