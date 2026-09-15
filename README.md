@@ -32,13 +32,13 @@ lefthook:
 
 ```shell
 # Show all installable versions
-asdf list-all lefthook
+asdf list all lefthook
 
 # Install specific version
 asdf install lefthook latest
 
 # Set a version globally (on your ~/.tool-versions file)
-asdf global lefthook latest
+asdf set --home lefthook latest
 
 # Now lefthook commands are available
 lefthook --help
